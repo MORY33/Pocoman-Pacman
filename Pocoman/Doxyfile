@@ -1,0 +1,24 @@
+# Doxyfile configuration file
+
+# Set the project name
+PROJECT_NAME = "Pocoman"
+
+# Set the source code directory
+INPUT = C:/Users/szymi/OneDrive/Pulpit/Studia/sem 6/.NET i Java/Java/Pocoman-Pacman/Pocoman/src
+
+# Set the output directory for the generated documentation
+OUTPUT_DIRECTORY = C:/Users/szymi/OneDrive/Pulpit/Studia/sem 6/.NET i Java/Java/Pocoman-Pacman
+
+# Set the Doxygen layout file (optional)
+# LAYOUT_FILE =
+
+# Enable/disable specific features as per your project requirements
+# For Java projects, you may want to enable Javadoc-style comments
+JAVADOC_AUTOBRIEF = YES
+EXTRACT_ALL = YES
+EXTRACT_PRIVATE = YES
+EXTRACT_PACKAGE = YES
+EXTRACT_STATIC = YES
+
+# Additional settings as needed...
+
