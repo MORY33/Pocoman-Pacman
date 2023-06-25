@@ -7,14 +7,12 @@ public class Pacman extends GameCharacter {
 
     @Override
     public void move() {
-        // logic to move the pacman
     }
 
     @Override
     public void run() {
         while(true) {
             move();
-            // Sleep or wait for keyboard input
         }
     }
 }

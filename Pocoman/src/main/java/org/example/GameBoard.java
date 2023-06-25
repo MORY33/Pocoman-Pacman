@@ -1,19 +1,16 @@
 package org.example;
 
-import java.util.*;
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
+import java.util.ArrayList;
 import java.util.List;
-import javax.swing.JOptionPane;
-import javax.swing.Timer;
+import java.util.Random;
 
 
 public class GameBoard extends JPanel {
-    private static final int SIZE = 19; // Updated size
+    private static final int SIZE = 19;
     private int yellowSquareCounter;
     private Position pacmanPos;
     private Ghost ghost1;
@@ -21,13 +18,12 @@ public class GameBoard extends JPanel {
     private Ghost ghost3;
 
 
-    //    private static final int MAX_RESETS = 3; // Maximum number of game resets
-    private static final int MAX_RESETS = 2; // Maximum number of game resets
+    private static final int MAX_RESETS = 2;
 
 
     private short[][] board;
-    private int moveDirection; // 0: no movement, 1: up, 2: down, 3: left, 4: right
-    private int resetCount; // Counter for game resets
+    private int moveDirection; // 0: brak ruchu, 1: gora, 2: dol, 3: lewo, 4: prawo
+    private int resetCount;
 
 
     public GameBoard() {
@@ -36,7 +32,7 @@ public class GameBoard extends JPanel {
         yellowSquareCounter = 0;
         initBoard();
         pacmanPos = new Position(SIZE / 2 + 6, SIZE / 2);
-        moveDirection = 4; // Start Pacman moving to the right
+        moveDirection = 4;
         resetCount = 0;
 
         setFocusable(true);
@@ -51,34 +47,28 @@ public class GameBoard extends JPanel {
             }
         });
 
-        setFocusTraversalKeysEnabled(false); // To capture arrow keys
+        setFocusTraversalKeysEnabled(false);
 
-        // Start Pacman's constant movement
         Timer movementTimer = new Timer(200, (e) -> movePacman());
         movementTimer.setRepeats(true);
         movementTimer.start();
 
-        ghost1 = new Ghost(new Position(SIZE / 2, SIZE / 2 + 1)); // Create a new Ghost object
-        ghost2 = new FollowGhost(new Position(SIZE / 2, SIZE / 2), this); // Create a new Ghost object
-        ghost3 = new Ghost(new Position(SIZE / 2, SIZE / 2 - 1)); // Create a new Ghost object
-        Thread ghostThread1 = new Thread(ghost1); // Create a new thread for the ghost
-        Thread ghostThread2 = new Thread(ghost2); // Create a new thread for the ghost
-        Thread ghostThread3 = new Thread(ghost3); // Create a new thread for the ghost
-        ghostThread1.start(); // Start the ghost thread
-        ghostThread2.start(); // Start the ghost thread
-        ghostThread3.start(); // Start the ghost thread
+        ghost1 = new Ghost(new Position(SIZE / 2, SIZE / 2 + 1));
+        ghost2 = new FollowGhost(new Position(SIZE / 2, SIZE / 2), this);
+        ghost3 = new Ghost(new Position(SIZE / 2, SIZE / 2 - 1));
+        Thread ghostThread1 = new Thread(ghost1);
+        Thread ghostThread2 = new Thread(ghost2);
+        Thread ghostThread3 = new Thread(ghost3);
+        ghostThread1.start();
+        ghostThread2.start();
+        ghostThread3.start();
     }
 
     public boolean isWalkable(int row, int col) {
         if (row < 0 || row >= board.length || col < 0 || col >= board[0].length) {
-            // The cell is out of bounds
             return false;
         }
-
         short cell = board[row][col];
-
-        // Check if the cell is a wall or any other obstacle
-        // Assuming that a wall is represented by the character '#'
         return cell != 0;
     }
 
@@ -92,23 +82,22 @@ public class GameBoard extends JPanel {
         int newRow = newPosition.getRow();
         int newCol = newPosition.getCol();
 
-        // Update the game board to reflect the new position
-        board[oldRow][oldCol] -= 50; // Assuming EMPTY_SPACE is a constant representing an empty space on the board
-        board[newRow][newCol] += 50; // Assuming GHOST_SYMBOL is a constant representing the ghost symbol on the board
+        board[oldRow][oldCol] -= 50;
+        board[newRow][newCol] += 50;
     }
 
     public void resetGhostPosition() {
-        board[ghost1.getPosition().getRow()][ghost1.getPosition().getCol()] -= 50; // Clear current ghost position
-        ghost1.setPosition(new Position(SIZE / 2, SIZE / 2 + 1)); // Reset ghost position
-        board[ghost1.getPosition().getRow()][ghost1.getPosition().getCol()] += 50; // Set new ghost position
+        board[ghost1.getPosition().getRow()][ghost1.getPosition().getCol()] -= 50;
+        ghost1.setPosition(new Position(SIZE / 2, SIZE / 2 + 1));
+        board[ghost1.getPosition().getRow()][ghost1.getPosition().getCol()] += 50;
 
-        board[ghost2.getPosition().getRow()][ghost2.getPosition().getCol()] -= 50; // Clear current ghost position
-        ghost2.setPosition(new Position(SIZE / 2, SIZE / 2)); // Reset ghost position
-        board[ghost2.getPosition().getRow()][ghost2.getPosition().getCol()] += 50; // Set new ghost position
+        board[ghost2.getPosition().getRow()][ghost2.getPosition().getCol()] -= 50;
+        ghost2.setPosition(new Position(SIZE / 2, SIZE / 2));
+        board[ghost2.getPosition().getRow()][ghost2.getPosition().getCol()] += 50;
 
-        board[ghost3.getPosition().getRow()][ghost3.getPosition().getCol()] -= 50; // Clear current ghost position
-        ghost3.setPosition(new Position(SIZE / 2, SIZE / 2 - 1)); // Reset ghost position
-        board[ghost3.getPosition().getRow()][ghost3.getPosition().getCol()] += 50; // Set new ghost position
+        board[ghost3.getPosition().getRow()][ghost3.getPosition().getCol()] -= 50;
+        ghost3.setPosition(new Position(SIZE / 2, SIZE / 2 - 1));
+        board[ghost3.getPosition().getRow()][ghost3.getPosition().getCol()] += 50;
         repaint();
     }
 
@@ -127,16 +116,16 @@ public class GameBoard extends JPanel {
             int dCol = 0;
             switch (direction) {
                 case 1:
-                    dRow = -1; // Move up
+                    dRow = -1;
                     break;
                 case 2:
-                    dRow = 1; // Move down
+                    dRow = 1;
                     break;
                 case 3:
-                    dCol = -1; // Move left
+                    dCol = -1;
                     break;
                 case 4:
-                    dCol = 1; // Move right
+                    dCol = 1;
                     break;
             }
 
@@ -145,13 +134,11 @@ public class GameBoard extends JPanel {
 
 
             if (isValidGhostMove(newRow, newCol)) {
-//                System.out.println(board[getPosition().getRow()][getPosition().getCol()]);
 
-                board[getPosition().getRow()][getPosition().getCol()] -= 50; // Clear previous ghost position
-//                System.out.println(board[getPosition().getRow()][getPosition().getCol()]);
+                board[getPosition().getRow()][getPosition().getCol()] -= 50;
 
-                setPosition(new Position(newRow, newCol)); // Update ghost position
-                board[getPosition().getRow()][getPosition().getCol()] += 50; // Set new ghost position
+                setPosition(new Position(newRow, newCol));
+                board[getPosition().getRow()][getPosition().getCol()] += 50;
 
                 if (board[getPosition().getRow()][getPosition().getCol()]==76 || board[getPosition().getRow()][getPosition().getCol()]==66) {
                     board[getPosition().getRow()][getPosition().getCol()]-=15;
@@ -170,16 +157,16 @@ public class GameBoard extends JPanel {
                 int dCol = 0;
                 switch (i) {
                     case 1:
-                        dRow = -1; // Move up
+                        dRow = -1;
                         break;
                     case 2:
-                        dRow = 1; // Move down
+                        dRow = 1;
                         break;
                     case 3:
-                        dCol = -1; // Move left
+                        dCol = -1;
                         break;
                     case 4:
-                        dCol = 1; // Move right
+                        dCol = 1;
                         break;
                 }
 
@@ -191,7 +178,7 @@ public class GameBoard extends JPanel {
             }
 
             if (validDirections.isEmpty()) {
-                return 0; // No valid directions available
+                return 0;
             } else {
                 int randomIndex = random.nextInt(validDirections.size());
                 return validDirections.get(randomIndex);
@@ -203,7 +190,7 @@ public class GameBoard extends JPanel {
             while (true) {
                 move();
                 try {
-                    Thread.sleep(500); // Wait for 500 milliseconds between each movement
+                    Thread.sleep(500);
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
@@ -237,59 +224,52 @@ public class GameBoard extends JPanel {
             int rowDiff = playerRow - ghostRow;
             int colDiff = playerCol - ghostCol;
 
-            // Check if the ghost can move directly towards the player
             if (Math.abs(rowDiff) + Math.abs(colDiff) <= 1 && gameBoard.isWalkable(playerRow, playerCol)) {
                 return new Position(playerRow, playerCol);
             }
 
-            // If the ghost is blocked by a wall, follow the right-hand rule to go around it
             if (colDiff > 0) {
-                // Try moving right while keeping the right hand on the wall
                 if (gameBoard.isWalkable(ghostRow, ghostCol + 1)) {
-                    return new Position(ghostRow, ghostCol + 1); // Move right
+                    return new Position(ghostRow, ghostCol + 1);
                 } else if (gameBoard.isWalkable(ghostRow - 1, ghostCol)) {
-                    return new Position(ghostRow - 1, ghostCol); // Move up
+                    return new Position(ghostRow - 1, ghostCol);
                 } else if (gameBoard.isWalkable(ghostRow + 1, ghostCol)) {
-                    return new Position(ghostRow + 1, ghostCol); // Move down
+                    return new Position(ghostRow + 1, ghostCol);
                 } else {
-                    return new Position(ghostRow, ghostCol - 1); // Move left
+                    return new Position(ghostRow, ghostCol - 1);
                 }
             } else if (colDiff < 0) {
-                // Try moving left while keeping the right hand on the wall
                 if (gameBoard.isWalkable(ghostRow, ghostCol - 1)) {
-                    return new Position(ghostRow, ghostCol - 1); // Move left
+                    return new Position(ghostRow, ghostCol - 1);
                 } else if (gameBoard.isWalkable(ghostRow + 1, ghostCol)) {
-                    return new Position(ghostRow + 1, ghostCol); // Move down
+                    return new Position(ghostRow + 1, ghostCol);
                 } else if (gameBoard.isWalkable(ghostRow - 1, ghostCol)) {
-                    return new Position(ghostRow - 1, ghostCol); // Move up
+                    return new Position(ghostRow - 1, ghostCol);
                 } else {
-                    return new Position(ghostRow, ghostCol + 1); // Move right
+                    return new Position(ghostRow, ghostCol + 1);
                 }
             } else if (rowDiff > 0) {
-                // Try moving down while keeping the right hand on the wall
                 if (gameBoard.isWalkable(ghostRow + 1, ghostCol)) {
-                    return new Position(ghostRow + 1, ghostCol); // Move down
+                    return new Position(ghostRow + 1, ghostCol);
                 } else if (gameBoard.isWalkable(ghostRow, ghostCol + 1)) {
-                    return new Position(ghostRow, ghostCol + 1); // Move right
+                    return new Position(ghostRow, ghostCol + 1);
                 } else if (gameBoard.isWalkable(ghostRow, ghostCol - 1)) {
-                    return new Position(ghostRow, ghostCol - 1); // Move left
+                    return new Position(ghostRow, ghostCol - 1);
                 } else {
-                    return new Position(ghostRow - 1, ghostCol); // Move up
+                    return new Position(ghostRow - 1, ghostCol);
                 }
             } else if (rowDiff < 0) {
-                // Try moving up while keeping the right hand on the wall
                 if (gameBoard.isWalkable(ghostRow - 1, ghostCol)) {
-                    return new Position(ghostRow - 1, ghostCol); // Move up
+                    return new Position(ghostRow - 1, ghostCol);
                 } else if (gameBoard.isWalkable(ghostRow, ghostCol - 1)) {
-                    return new Position(ghostRow, ghostCol - 1); // Move left
+                    return new Position(ghostRow, ghostCol - 1);
                 } else if (gameBoard.isWalkable(ghostRow, ghostCol + 1)) {
-                    return new Position(ghostRow, ghostCol + 1); // Move right
+                    return new Position(ghostRow, ghostCol + 1);
                 } else {
-                    return new Position(ghostRow + 1, ghostCol); // Move down
+                    return new Position(ghostRow + 1, ghostCol);
                 }
             }
 
-            // If no valid move is found, stay in the current position
             return getPosition();
         }
 
@@ -300,12 +280,12 @@ public class GameBoard extends JPanel {
 
         @Override
         public void move() {
-            pacmanPos = gameBoard.getPacmanPosition(); // Update pacmanPos
+            pacmanPos = gameBoard.getPacmanPosition();
 
             Position nextMove = getNextMoveTowardsPlayer();
 
-            gameBoard.updateGhostPosition(getPosition(), nextMove); // Update ghost's position on the game board
-            setPosition(nextMove); // Update ghost's position
+            gameBoard.updateGhostPosition(getPosition(), nextMove);
+            setPosition(nextMove);
 
             if (board[getPosition().getRow()][getPosition().getCol()] == 76 || board[getPosition().getRow()][getPosition().getCol()] == 66) {
                 board[getPosition().getRow()][getPosition().getCol()] -= 15;
@@ -320,7 +300,7 @@ public class GameBoard extends JPanel {
             while (true) {
                 move();
                 try {
-                    Thread.sleep(500); // Wait for 500 milliseconds between each movement
+                    Thread.sleep(500);
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
@@ -358,20 +338,16 @@ public class GameBoard extends JPanel {
 
         };
 
-        // Copy the predefined board into the actual game board
         for (int i = 0; i < SIZE; i++) {
             for (int j = 0; j < SIZE; j++) {
                 board[i][j] = predefinedBoard[i][j];
             }
         }
 
-        // Place Pacman ('p') at the center of the board
-//        board[SIZE / 2][SIZE / 2] = 'p';
         board[SIZE / 2 + 6][SIZE / 2] += 15;
-        // Place ghosts ('g') at specific positions
-        board[SIZE / 2][SIZE / 2 + 1] += 50;  // First ghost
-        board[SIZE / 2][SIZE / 2] += 50;  // Second ghost
-        board[SIZE / 2][SIZE / 2 - 1] += 50;  // third ghost
+        board[SIZE / 2][SIZE / 2 + 1] += 50;  //pierwszy duch
+        board[SIZE / 2][SIZE / 2] += 50; //drugi duch
+        board[SIZE / 2][SIZE / 2 - 1] += 50;  //trzeci duch
 
 
 
@@ -383,16 +359,16 @@ public class GameBoard extends JPanel {
         int dCol = 0;
         switch (moveDirection) {
             case 1:
-                dRow = -1; // Move up
+                dRow = -1;
                 break;
             case 2:
-                dRow = 1; // Move down
+                dRow = 1;
                 break;
             case 3:
-                dCol = -1; // Move left
+                dCol = -1;
                 break;
             case 4:
-                dCol = 1; // Move right
+                dCol = 1;
                 break;
         }
 
@@ -407,32 +383,29 @@ public class GameBoard extends JPanel {
 
                     JOptionPane.showMessageDialog(dialog, "YOU WIN", "Game Over", JOptionPane.INFORMATION_MESSAGE);
 
-                    // Create the "Try Again" button
                     JButton tryAgainButton = new JButton("Try Again");
                     tryAgainButton.addActionListener(e -> {
-                        dialog.dispose(); // Close the custom JDialog
+                        dialog.dispose();
                         resetCount = 1;
                         yellowSquareCounter = 0;
                         resetGhostPosition();
                         initBoard();
                         repaint();
-                        resetGame(); // Restart the game
+                        resetGame();
                         repaint();
                     });
 
-                    // Create the "Quit Game" button
                     JButton quitGameButton = new JButton("Quit Game");
                     quitGameButton.addActionListener(e -> {
-                        System.exit(0); // Exit the application
+                        System.exit(0);
                     });
 
-                    // Add the buttons to the custom JDialog
                     JPanel buttonPanel = new JPanel();
                     buttonPanel.add(tryAgainButton);
                     buttonPanel.add(quitGameButton);
                     dialog.getContentPane().add(buttonPanel, BorderLayout.SOUTH);
                     dialog.pack();
-                    dialog.setLocationRelativeTo(this); // Center the dialog on the frame
+                    dialog.setLocationRelativeTo(this);
                     dialog.setVisible(true);
                 }
                 board[pacmanPos.getRow()][pacmanPos.getCol()] -= 25;
@@ -445,7 +418,7 @@ public class GameBoard extends JPanel {
 
             if (board[pacmanPos.getRow()][pacmanPos.getCol()] > 50) {
                 System.out.println(board[pacmanPos.getRow()][pacmanPos.getCol()]);
-                handlePacmanGhostCollision(); // Handle Pacman touching a ghost
+                handlePacmanGhostCollision();
                 return;
             }
             board[pacmanPos.getRow()][pacmanPos.getCol()] += 15;
@@ -455,9 +428,9 @@ public class GameBoard extends JPanel {
     private void handlePacmanGhostCollision() {
         resetCount++;
         if (resetCount > MAX_RESETS) {
-            finishGame(); // Finish the game if Pacman resets more than MAX_RESETS times
+            finishGame();
         } else {
-            resetGame(); // Reset the game
+            resetGame();
         }
     }
 
@@ -472,68 +445,56 @@ public class GameBoard extends JPanel {
     private void handleArrowKeys(int keyCode) {
         switch (keyCode) {
             case KeyEvent.VK_UP:
-                moveDirection = 1; // Move up
+                moveDirection = 1;
                 break;
             case KeyEvent.VK_DOWN:
-                moveDirection = 2; // Move down
+                moveDirection = 2;
                 break;
             case KeyEvent.VK_LEFT:
-                moveDirection = 3; // Move left
+                moveDirection = 3;
                 break;
             case KeyEvent.VK_RIGHT:
-                moveDirection = 4; // Move right
+                moveDirection = 4;
                 break;
         }
     }
     private void resetGame() {
-        // Reset the game state here
-        // For example, clear the board, reposition Pacman and ghosts, update the score, etc.
         pacmanPos = new Position(SIZE / 2 + 6,SIZE / 2);
         moveDirection = 4;
-//            repaint();
     }
 
 
     private void finishGame() {
-        // Finish the game here
-        // For example, display "YOU LOSE" message or perform any other end-game actions
-
-        // Create a custom JDialog to display the message, "Try Again," and "Quit Game" buttons
         JDialog dialog = new JDialog((Frame) null, "Game Over", true);
         dialog.setDefaultCloseOperation(JDialog.DO_NOTHING_ON_CLOSE);
 
         JOptionPane.showMessageDialog(dialog, "YOU LOSE", "Game Over", JOptionPane.INFORMATION_MESSAGE);
 
-        // Create the "Try Again" button
         JButton tryAgainButton = new JButton("Try Again");
         tryAgainButton.addActionListener(e -> {
-            dialog.dispose(); // Close the custom JDialog
+            dialog.dispose();
             resetCount = 1;
             yellowSquareCounter = 0;
             resetGhostPosition();
             initBoard();
             repaint();
-            resetGame(); // Restart the game
+            resetGame();
         });
 
-        // Create the "Quit Game" button
         JButton quitGameButton = new JButton("Quit Game");
         quitGameButton.addActionListener(e -> {
-            System.exit(0); // Exit the application
+            System.exit(0);
         });
 
-        // Add the buttons to the custom JDialog
         JPanel buttonPanel = new JPanel();
         buttonPanel.add(tryAgainButton);
         buttonPanel.add(quitGameButton);
         dialog.getContentPane().add(buttonPanel, BorderLayout.SOUTH);
         dialog.pack();
-        dialog.setLocationRelativeTo(this); // Center the dialog on the frame
+        dialog.setLocationRelativeTo(this);
         dialog.setVisible(true);
     }
     private void endGame() {
-        // Perform end game logic here
-        // For example, display a message or reset the game
         System.out.println("Game Over");
     }
 
@@ -541,18 +502,15 @@ public class GameBoard extends JPanel {
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);
 
-        // Get the smallest size and make it even for proper grid division
         int cellSize = Math.min(getWidth(), getHeight());
         cellSize = cellSize - (cellSize % SIZE);
 
         int cellWidth = cellSize / SIZE;
         int cellHeight = cellSize / SIZE;
 
-        // Set the background color to white
         g.setColor(Color.WHITE);
         g.fillRect(0, 0, getWidth(), getHeight());
 
-        // Paint the cells and ghosts
         for (int i = 0; i < SIZE; i++) {
             for (int j = 0; j < SIZE; j++) {
                 switch (board[i][j]) {
@@ -561,7 +519,6 @@ public class GameBoard extends JPanel {
                         break;
                     case 11:
                         g.setColor(Color.WHITE);
-                        // Draw yellow dot
                         int dotSize = cellWidth / 4;
                         int dotOffsetX = j * cellWidth + (cellWidth / 2) - (dotSize / 2);
                         int dotOffsetY = i * cellHeight + (cellHeight / 2) - (dotSize / 2);
